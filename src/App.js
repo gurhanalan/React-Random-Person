@@ -15,6 +15,41 @@ function App() {
     const [title, setTitle] = useState("name");
     const [value, setValue] = useState("random person");
 
+    const getPerson = async () => {
+        const response = await fetch(url);
+        const data = await response.json();
+        const person = data.results[0];
+        const {
+            email,
+            phone,
+            picture: { large: image },
+            login: { password },
+            dob: { age },
+            location: {
+                street: { number: streetNumber, name: streetName },
+            },
+            name: { first, last },
+        } = person;
+
+        const newPerson = {
+            image,
+            phone,
+            email,
+            password,
+            age,
+            street: `${streetNumber}${streetName}`,
+            name: `${first}${last}`,
+        };
+
+        setPerson(newPerson);
+        setLoading(false);
+        setTitle("name");
+        setValue(newPerson.name);
+    };
+
+    useEffect(() => {
+        getPerson();
+    }, []);
     const handleValue = (e) => {
         console.log(e.target);
     };
@@ -74,7 +109,7 @@ function App() {
                             <FaLock />
                         </button>
                     </div>
-                    <button className="btn" type="button">
+                    <button className="btn" type="button" onClick={getPerson}>
                         {loading ? "loading..." : "random user"}
                     </button>
                 </div>
